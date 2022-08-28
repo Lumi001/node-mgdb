@@ -12,6 +12,7 @@ const User = require('./models/user');
 const MONGODB_URI = 'mongodb+srv://admin001:admin001@cluster0.xlv7a.mongodb.net';
 
 const app = express();
+
 const store = new MongoDBStore({
   uri: MONGODB_URI,
   collection: 'sessions'
@@ -35,7 +36,10 @@ app.use(
   }))
 
 app.use((req, res, next) => {
-  User.findById('62e05d960443ee3f00bd55eb')
+  if(!req.session.user){
+    return next()
+  }
+  User.findById(req.session.user._id)
     .then(user => {
       req.user = user;
       next();
